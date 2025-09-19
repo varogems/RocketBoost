@@ -13,19 +13,20 @@ public class CollisionHandler : MonoBehaviour
     [SerializeField] AudioSource m_audioSource;
     [SerializeField] AudioClip m_finishAC;
     [SerializeField] AudioClip m_crashAC;
+    [SerializeField] LevelManager m_levelManager;
 
-    [SerializeField] float m_delayLoadScene = 2f;
-
-    Coroutine m_crtFinish = null;
     bool m_isCollide = true;
 
 
     void Update()
     {
+        //! Turn on/off collider game.
         if (Keyboard.current.tKey.wasPressedThisFrame)
-        {
             m_isCollide = !m_isCollide;
-        }
+
+        //! Escapte to menu scene.
+        if (Keyboard.current.escapeKey.wasPressedThisFrame)
+            m_levelManager.LoadMenu();
     }
 
     void OnCollisionEnter(Collision collision)
@@ -42,11 +43,6 @@ public class CollisionHandler : MonoBehaviour
                     break;
             }
     }
-    IEnumerator ReloadCurScene()
-    {
-        yield return new WaitForSeconds(m_delayLoadScene);
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-    }
 
     void CrashProcess()
     {
@@ -58,37 +54,16 @@ public class CollisionHandler : MonoBehaviour
         m_explosionPs.Play();
 
 
-        if (m_crtFinish != null)
-        {
-            StopCoroutine(m_crtFinish);
-            m_crtFinish = null;
-        }
-        
         // Invoke("ReloadCurScene", m_delayLoadScene);
-        StartCoroutine(ReloadCurScene());
+        m_levelManager.ReloadCurScene();
 
-        Debug.Log("Wait Reload Cur Scene");
     }
 
-
-
-
-    IEnumerator LoadNextScene()
-    {
-        yield return new WaitForSeconds(m_delayLoadScene);
-
-        int nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
-
-        if (nextSceneIndex == SceneManager.sceneCountInBuildSettings)
-            SceneManager.LoadScene(0);
-        else
-            SceneManager.LoadScene(nextSceneIndex);
-    }
 
     void Finish()
     {
-        if (m_crtFinish != null)
-            return;
+   
+        if (m_levelManager.IsFinish()) return;
             
         m_movementHandler.enabled = false;
 
@@ -98,8 +73,8 @@ public class CollisionHandler : MonoBehaviour
 
 
         // Invoke("LoadNextScene", m_delayLoadScene);
-        m_crtFinish = StartCoroutine(LoadNextScene());
 
-        Debug.Log("Wait Load Next Scene");
+        m_levelManager.LoadNextScene();
+
     }
 }
