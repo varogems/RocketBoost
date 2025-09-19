@@ -24,7 +24,9 @@ public class LevelManager : MonoBehaviour
 
    IEnumerator loadScene(eScene scene)
     {
-        yield return new WaitForSeconds(delayLoadScene);
+        if(scene != eScene.Menu)
+            yield return new WaitForSeconds(delayLoadScene);
+            
         SceneManager.LoadScene((int)scene);
     }
 
