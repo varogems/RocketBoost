@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 public class LevelManager : MonoBehaviour
 {
     [SerializeField] float delayLoadScene = 2f;
+    ScoreKeeper m_scoreKeeper;
 
 
     public enum eScene
@@ -16,6 +17,11 @@ public class LevelManager : MonoBehaviour
     }
 
     Coroutine m_crtFinish = null;
+
+    void Awake()
+    {
+        m_scoreKeeper = FindFirstObjectByType<ScoreKeeper>();
+    }
 
     public bool IsFinish()
     {
@@ -33,9 +39,12 @@ public class LevelManager : MonoBehaviour
     public void LoadNextScene()
     {
         int nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
-        
+
+        if(nextSceneIndex == 1)
+            m_scoreKeeper.resetScore();
+
         if (nextSceneIndex == SceneManager.sceneCountInBuildSettings)
-            SceneManager.LoadScene(1);
+                SceneManager.LoadScene(0);
             
         m_crtFinish = StartCoroutine(loadScene((eScene)nextSceneIndex));
             
