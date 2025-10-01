@@ -6,6 +6,7 @@ public class Item : MonoBehaviour
     [SerializeField] int m_score = 100;
     [SerializeField] float m_speed;
     [SerializeField] float m_delayDestroyGameObject;
+    [SerializeField] ParticleSystem m_particle;
     [SerializeField] AudioClip m_audioPickup;
     [SerializeField] AudioSource m_audioSource;
 
@@ -29,8 +30,9 @@ public class Item : MonoBehaviour
 
     IEnumerator IEPickup()
     {
-        m_scoreKeeper.collectScore(m_score);
-        m_audioSource.PlayOneShot(m_audioPickup);
+        m_particle?.Play();
+        m_scoreKeeper?.collectScore(m_score);
+        m_audioSource?.PlayOneShot(m_audioPickup);
         yield return new WaitForSeconds(m_delayDestroyGameObject);
         Destroy(this.gameObject);
     }
